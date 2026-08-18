@@ -11,7 +11,7 @@ use std::time::Duration;
 use ratatui::DefaultTerminal;
 use tokio::sync::mpsc;
 
-use crate::{state::AppState, update::Message};
+use crate::{api::ApiClient, state::AppState, update::Message};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -30,7 +30,8 @@ async fn run(terminal: &mut DefaultTerminal) -> Result<()> {
     let mut state = AppState::default();
     let (tx, mut rx) = mpsc::unbounded_channel::<Message>();
 
-    api::spawn_fetch_users(tx.clone());
+    let api = ApiClient::new(tx.clone())?;
+    api.spawn_fetch_users();
     event::spawn_input(tx.clone());
 
     let mut tick = tokio::time::interval(Duration::from_millis(100));
@@ -47,7 +48,7 @@ async fn run(terminal: &mut DefaultTerminal) -> Result<()> {
                         update::update(&mut state, message);
 
                         if let Some(user_id) = state.current_user_id() {
-                            api::spawn_fetch_todos(tx.clone(), user_id);
+                            api.spawn_fetch_todos( user_id);
                         }
                     }
 
