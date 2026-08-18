@@ -1,10 +1,11 @@
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Layout, Rect};
-use ratatui::style::Style;
+use ratatui::style::{Color, Style};
 use ratatui::text::Line;
 use ratatui::widgets::{Block, List, Row, Table};
 
 use ratatui::widgets::Paragraph;
+use tui_logger::TuiLoggerWidget;
 
 use crate::state::AppState;
 
@@ -13,9 +14,35 @@ use crate::state::AppState;
 /// Called once per frame from the main loop. Layout and widgets below are
 /// example content — replace with your own UI.
 pub fn render(frame: &mut Frame, state: &mut AppState) {
+    let constraints = if state.show_log() {
+        vec![Constraint::Min(0), Constraint::Length(8)]
+    } else {
+        vec![Constraint::Min(0)]
+    };
+
+    let chunks = Layout::vertical(constraints).split(frame.area());
+
+    render_ui(frame, chunks[0], state);
+
+    if state.show_log() {
+        render_log(frame, chunks[1]);
+    }
+}
+
+// Log panel toggled with 'l', shown as a fixed-height bottom split.
+fn render_log(frame: &mut Frame, area: Rect) {
+    let log_widget = TuiLoggerWidget::default()
+        .style_error(Style::default().fg(Color::Red))
+        .style_warn(Style::default().fg(Color::Yellow))
+        .style_info(Style::default().fg(Color::Green))
+        .style_debug(Style::default().fg(Color::Gray))
+        .block(Block::bordered().title(" Log "));
+    frame.render_widget(log_widget, area);
+}
+
+fn render_ui(frame: &mut Frame, area: Rect, state: &mut AppState) {
     let [area_lista, area_tabella] =
-        Layout::vertical([Constraint::Percentage(50), Constraint::Percentage(50)])
-            .areas(frame.area());
+        Layout::vertical([Constraint::Percentage(50), Constraint::Percentage(50)]).areas(area);
 
     render_list(frame, area_lista, state);
     render_table(frame, area_tabella, state);

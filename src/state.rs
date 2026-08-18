@@ -33,6 +33,7 @@ pub struct AppState {
     current_user_id: Option<u32>,
     current_user_name: Option<String>,
     spinner_frame: usize,
+    show_log: bool,
 }
 
 impl AppState {
@@ -169,6 +170,14 @@ impl AppState {
     pub fn spinner_symbol(&self) -> char {
         SPINNER_FRAMES[self.spinner_frame]
     }
+
+    pub fn show_log(&self) -> bool {
+        self.show_log
+    }
+
+    pub fn toggle_log(&mut self) {
+        self.show_log = !self.show_log;
+    }
 }
 
 impl Default for AppState {
@@ -182,6 +191,7 @@ impl Default for AppState {
             current_user_id: None,
             current_user_name: None,
             spinner_frame: 0,
+            show_log: false,
         }
     }
 }

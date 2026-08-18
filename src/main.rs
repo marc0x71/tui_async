@@ -7,6 +7,7 @@ mod update;
 
 use color_eyre::{Result, eyre::bail};
 use std::time::Duration;
+use tui_logger::{LevelFilter, init_logger, set_default_level};
 
 use ratatui::DefaultTerminal;
 use tokio::sync::mpsc;
@@ -16,6 +17,9 @@ use crate::{api::ApiClient, state::AppState, update::Message};
 #[tokio::main]
 async fn main() -> Result<()> {
     color_eyre::install()?;
+
+    init_logger(LevelFilter::Trace)?;
+    set_default_level(LevelFilter::Debug);
 
     let mut terminal = ratatui::init();
 

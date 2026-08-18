@@ -9,6 +9,7 @@ pub enum Message {
     InputError(String),
 
     // -- Application messages: handled by `update::update` --
+    ToggleLog,
     ToggleFocus,
     SelectPrevious,
     SelectNext,
@@ -31,6 +32,7 @@ pub fn update(state: &mut AppState, message: Message) {
         Message::UsersLoadFailed(errore) => state.set_users_error(errore),
         Message::TodosLoaded(todos) => state.set_todos(todos),
         Message::TodosLoadFailed(errore) => state.set_todos_error(errore),
+        Message::ToggleLog => state.toggle_log(),
 
         // Control messages are intercepted by the main loop and never reach here.
         Message::Quit | Message::InputError(_) => {}

@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use color_eyre::eyre::Result;
+use log::info;
 use tokio::sync::mpsc::UnboundedSender;
 
 use crate::{
@@ -36,7 +37,10 @@ impl ApiClient {
         let tx = self.tx.clone();
         tokio::spawn(async move {
             let message = match fetch_users(&client).await {
-                Ok(users) => Message::UsersLoaded(users),
+                Ok(users) => {
+                    info!("Found {} users", users.len());
+                    Message::UsersLoaded(users)
+                }
                 Err(errore) => Message::UsersLoadFailed(errore.to_string()),
             };
 
@@ -50,7 +54,10 @@ impl ApiClient {
         let tx = self.tx.clone();
         tokio::spawn(async move {
             let message = match fetch_todos(&client, user_id).await {
-                Ok(todos) => Message::TodosLoaded(todos),
+                Ok(todos) => {
+                    info!("Found {} todos", todos.len());
+                    Message::TodosLoaded(todos)
+                }
                 Err(errore) => Message::TodosLoadFailed(errore.to_string()),
             };
 
@@ -60,10 +67,12 @@ impl ApiClient {
 }
 
 async fn fetch_users(client: &reqwest::Client) -> Result<Vec<User>, reqwest::Error> {
+    info!("Fetching users from {USERS_URL} ...");
     client.get(USERS_URL).send().await?.json().await
 }
 
 async fn fetch_todos(client: &reqwest::Client, user_id: u32) -> Result<Vec<Todo>, reqwest::Error> {
     let url = format!("https://jsonplaceholder.typicode.com/todos?userId={user_id}");
+    info!("Fetching todos from {url} ...");
     client.get(url).send().await?.json().await
 }

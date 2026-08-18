@@ -1,7 +1,7 @@
 use color_eyre::Result;
 use std::thread;
 
-use ratatui::crossterm::event::{self, Event, KeyCode, KeyEventKind};
+use ratatui::crossterm::event::{self, Event, KeyCode};
 use tokio::sync::mpsc::UnboundedSender;
 
 use crate::update::Message;
@@ -55,6 +55,7 @@ fn key_to_message(code: KeyCode) -> Option<Message> {
         KeyCode::Tab => Some(Message::ToggleFocus),
         KeyCode::Up => Some(Message::SelectPrevious),
         KeyCode::Down => Some(Message::SelectNext),
+        KeyCode::Char('l') => Some(Message::ToggleLog),
         _ => None,
     }
 }
