@@ -9,12 +9,19 @@ use crate::{
 };
 
 const USERS_URL: &str = "https://jsonplaceholder.typicode.com/users";
+
+/// Example of a background task pattern: fetches data over HTTP and reports
+/// results back to the main loop via the same `Message` channel used by
+/// input and tick events. Replace with whatever async work your app needs
+/// (a different API, a filesystem watch, a websocket, ...) — the pattern
+/// stays the same.
 pub struct ApiClient {
     client: reqwest::Client,
     tx: UnboundedSender<Message>,
 }
 
 impl ApiClient {
+    /// Builds a new client with a default request timeout.
     pub fn new(tx: UnboundedSender<Message>) -> Result<Self> {
         let client = reqwest::Client::builder()
             .timeout(Duration::from_secs(10))
@@ -23,6 +30,7 @@ impl ApiClient {
         Ok(Self { client, tx })
     }
 
+    // Example: spawns a background fetch and reports the result as a Message.
     pub fn spawn_fetch_users(&self) {
         let client = self.client.clone();
         let tx = self.tx.clone();
@@ -36,6 +44,7 @@ impl ApiClient {
         });
     }
 
+    // Example: spawns a background fetch and reports the result as a Message.
     pub fn spawn_fetch_todos(&self, user_id: u32) {
         let client = self.client.clone();
         let tx = self.tx.clone();

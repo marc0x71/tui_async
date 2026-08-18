@@ -8,6 +8,10 @@ use ratatui::widgets::Paragraph;
 
 use crate::state::AppState;
 
+/// Renders the whole UI into the given frame.
+///
+/// Called once per frame from the main loop. Layout and widgets below are
+/// example content — replace with your own UI.
 pub fn render(frame: &mut Frame, state: &mut AppState) {
     let [area_lista, area_tabella] =
         Layout::vertical([Constraint::Percentage(50), Constraint::Percentage(50)])
@@ -17,6 +21,7 @@ pub fn render(frame: &mut Frame, state: &mut AppState) {
     render_table(frame, area_tabella, state);
 }
 
+// Example: renders the user list on the left/top panel.
 fn render_list(frame: &mut Frame, area: Rect, state: &mut AppState) {
     let blocco = Block::bordered()
         .title(" Utenti ")
@@ -56,6 +61,7 @@ fn render_list(frame: &mut Frame, area: Rect, state: &mut AppState) {
     frame.render_stateful_widget(lista, area, state.list_state_mut());
 }
 
+// Example: renders the to-do table for the selected user.
 fn render_table(frame: &mut Frame, area: Rect, state: &mut AppState) {
     let titolo = match state.current_user_name() {
         Some(nome) => format!(" To-do di {nome} "),

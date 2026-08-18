@@ -4,7 +4,11 @@ use crate::{
 };
 
 pub enum Message {
+    // -- Control messages: handled directly in the main loop, never reach `update` --
     Quit,
+    InputError(String),
+
+    // -- Application messages: handled by `update::update` --
     ToggleFocus,
     SelectPrevious,
     SelectNext,
@@ -14,7 +18,6 @@ pub enum Message {
     UsersLoadFailed(String),
     TodosLoaded(Vec<Todo>),
     TodosLoadFailed(String),
-    InputError(String),
 }
 
 pub fn update(state: &mut AppState, message: Message) {
@@ -28,6 +31,8 @@ pub fn update(state: &mut AppState, message: Message) {
         Message::UsersLoadFailed(errore) => state.set_users_error(errore),
         Message::TodosLoaded(todos) => state.set_todos(todos),
         Message::TodosLoadFailed(errore) => state.set_todos_error(errore),
-        _ => {}
+
+        // Control messages are intercepted by the main loop and never reach here.
+        Message::Quit | Message::InputError(_) => {}
     }
 }

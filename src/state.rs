@@ -23,6 +23,7 @@ enum TodosStatus {
 
 const SPINNER_FRAMES: [char; 4] = ['|', '/', '-', '\\'];
 
+/// Application state, updated in response to `Message`s and read by the UI.
 pub struct AppState {
     focus: Focus,
     list_state: ListState,
@@ -35,6 +36,7 @@ pub struct AppState {
 }
 
 impl AppState {
+    /// Switches focus between the list and the table.
     pub fn toggle_focus(&mut self) {
         self.focus = match self.focus {
             Focus::List => Focus::Table,
@@ -42,6 +44,7 @@ impl AppState {
         };
     }
 
+    /// Moves the selection up in the currently focused widget.
     pub fn select_previous(&mut self) {
         match self.focus {
             Focus::List => self.list_state.select_previous(),
@@ -49,6 +52,7 @@ impl AppState {
         }
     }
 
+    /// Moves the selection down in the currently focused widget.
     pub fn select_next(&mut self) {
         match self.focus {
             Focus::List => self.list_state.select_next(),
@@ -108,6 +112,7 @@ impl AppState {
         self.todos = TodosStatus::Failed(errore);
     }
 
+    /// Advances the loading spinner by one frame.
     pub fn advance_spinner(&mut self) {
         self.spinner_frame = self.spinner_frame.wrapping_add(1) % SPINNER_FRAMES.len();
     }
@@ -160,6 +165,7 @@ impl AppState {
         self.current_user_name.as_deref()
     }
 
+    /// Returns the current spinner character.
     pub fn spinner_symbol(&self) -> char {
         SPINNER_FRAMES[self.spinner_frame]
     }
