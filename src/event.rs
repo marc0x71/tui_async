@@ -1,3 +1,4 @@
+use color_eyre::Result;
 use std::thread;
 
 use ratatui::crossterm::event::{self, Event, KeyCode, KeyEventKind};
@@ -22,7 +23,7 @@ pub fn spawn_input(tx: UnboundedSender<Message>) {
     });
 }
 
-fn read_message() -> std::io::Result<Message> {
+fn read_message() -> Result<Message> {
     loop {
         let event = event::read()?;
 
